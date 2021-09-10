@@ -51,8 +51,8 @@ const printCountriesDefault = (outputData) => {
     
     //сортировка стран по языку
     let langData = outputData.sort((a, b) => {
-        if (a.country === lang) return 1;
-        if (b.country == lang) return -1;
+        if (a.country === lang) return -1;
+        if (b.country == lang) return 1;
         return a.country.localeCompare(b.country);
     });
 
@@ -104,11 +104,7 @@ const printCountriesSelect = (outputData, target) => {
     const lang = document.cookie.replace(/[^A-Z]/g, '');
     outputData = JSON.parse(localStorage.data)[lang];
     //сортировка стран по языку
-    let langData = outputData.sort((a, b) => {
-        if (a.country === lang) return -1;
-        if (b.country == lang) return 1;
-        return a.country.localeCompare(b.country);
-    });
+    let langData = outputData;
             //создание полного списка городов одной страны
             langData.forEach(element => {
                 if (target.childNodes[1] && element.country !== target.childNodes[1].textContent) {
@@ -117,7 +113,7 @@ const printCountriesSelect = (outputData, target) => {
                 else if ((target.childNodes[1] &&
                         element.country === target.childNodes[1].textContent &&
                         +element.count === +target.childNodes[3].textContent) || 
-                        (element.country === target.textContent || element.count === target.textContent)) {
+                        (element.country === target.textContent || +element.count === +target.textContent)) {
                     
                     col[1].innerHTML = '';
                     let countryBlock = document.createElement('div');
@@ -157,11 +153,7 @@ const printCitiesAutocomplete = (outputData) => {
 
     const lang = document.cookie.replace(/[^A-Z]/g, '');
     outputData = JSON.parse(localStorage.data)[lang];
-    let langData = outputData.sort((a, b) => {
-        if (a.country === lang) return -1;
-        if (b.country == lang) return 1;
-        return a.country.localeCompare(b.country);
-    }); 
+    let langData = outputData;
     //создание одного countryBlock
     let countryBlock = document.createElement('div');
     countryBlock.classList = 'dropdown-lists__countryBlock';
