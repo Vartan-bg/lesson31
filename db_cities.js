@@ -48,12 +48,17 @@ const printCountriesDefault = (outputData) => {
     const lang = document.cookie.replace(/[^A-Z]/g, '');
     outputData = JSON.parse(localStorage.data)[lang];
 
+    
     //сортировка стран по языку
     let langData = outputData.sort((a, b) => {
-        if (a.country === lang) return -1;
-        if (b.country == lang) return 1;
+        if (a.country === lang) return 1;
+        if (b.country == lang) return -1;
         return a.country.localeCompare(b.country);
     });
+
+    if (lang === 'EN' || lang ==='RU') {
+        langData = langData.reverse();
+    }
     col[0].innerHTML = '';
     //для каждого элемента создаётся countryBlock
     langData.forEach(element => {
@@ -152,7 +157,11 @@ const printCitiesAutocomplete = (outputData) => {
 
     const lang = document.cookie.replace(/[^A-Z]/g, '');
     outputData = JSON.parse(localStorage.data)[lang];
- 
+    let langData = outputData.sort((a, b) => {
+        if (a.country === lang) return -1;
+        if (b.country == lang) return 1;
+        return a.country.localeCompare(b.country);
+    }); 
     //создание одного countryBlock
     let countryBlock = document.createElement('div');
     countryBlock.classList = 'dropdown-lists__countryBlock';
@@ -181,6 +190,38 @@ const pause = () => {
     });
 };
 
+const removeList = (element) => {
+    let position1 = 10;
+    const interval = setInterval(() => {
+        if (position1 < 415) {
+            element.style.cssText = `
+                position: relative;
+                left: ${position1}px;
+                overflow: hidden;`;
+            position1 += 5;
+        } else {
+            clearInterval(interval);
+            element.style.display = 'none';
+        }   
+    });
+};
+
+const addList = (element) => {
+    let position1 = -425;
+    const interval = setInterval(() => {
+        if (position1 < 0) {
+            element.style.cssText = `
+                display: inline;
+                position: relative;
+                left: ${position1}px;
+                overflow: hidden;`;
+            position1 += 5;
+        } else {
+            clearInterval(interval);
+        }   
+    });
+};
+
 //слушатель
 body.addEventListener('click', (event) => {
     
@@ -192,24 +233,29 @@ body.addEventListener('click', (event) => {
             defaultList.style.display = 'inline';
             input.placeholder = '';
             if (col[0].innerHTML === '') {
-            
+                
                 printCountriesDefault(localStorage.data);
             } else {
-                return;
+                addList(defaultList);
             }
         } else if (target.value) {
             printCitiesAutocomplete(localStorage.data);
+            
         }
     }
     //если кликнули на страну в списке default
     else if (col[0].contains(target) &&
               (target.classList.contains('dropdown-lists__total-line') || target.parentNode.classList.contains('dropdown-lists__total-line'))) {
         printCountriesSelect(localStorage.data, target);
+        removeList(defaultList);
+        addList(selectList);
     
     }
     //если кликнули на страну в списке Select
     else if (col[1].contains(target) && (target.classList.contains('dropdown-lists__total-line') || target.parentNode.classList.contains('dropdown-lists__total-line'))) {
         printCountriesDefault(localStorage.data, target);
+        removeList(selectList);
+        addList(defaultList);
 
     }
     //если кликнули на город в любом списке
